@@ -8,13 +8,17 @@ import sys
 
 def init_argparse() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Create or display JSON Web Tokens (JWT)"
+        description="Create or display JSON Web Tokens (JWT). " +
+            "If subject and name are provided, create a token. " + 
+            "If a token is provided, validate it and print the claims. " +
+            "Optionally provide a TTL value in seconds or signing key."
     )
     parser.add_argument(
         "-v", "--version", action="version",
         version = f"{parser.prog} version 1.0.0"
     )
     parser.add_argument("-t", "--ttl", default=60*60, type=int)
+    parser.add_argument("-k", "--key", default="privkey.pem")
     parser.add_argument("-s", "--subject")
     parser.add_argument("-n", "--name")
 
@@ -27,13 +31,13 @@ def main():
     if all(i is not None for i in [args.subject, args.name]):
         # create a token
         claims = create_claims(args.subject, args.name, args.ttl)
-        key = read_key("privkey.pem")
+        key = read_key(args.key)
         algorithm = 'RS256'
         token = create_token(algorithm, key, claims)
         print(token)
     elif (args.token is not None):
         # Validate token and show claims
-        key = read_key("privkey.pem")
+        key = read_key(args.key)
         validate(args.token, key)
     else:
         # Usage

@@ -3,16 +3,42 @@
 
 from jwcrypto import jwt, jwk
 from datetime import datetime, timedelta, timezone
+import argparse
+import sys
+
+def init_argparse() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Create or display JSON Web Tokens (JWT)"
+    )
+    parser.add_argument(
+        "-v", "--version", action="version",
+        version = f"{parser.prog} version 1.0.0"
+    )
+    parser.add_argument("-t", "--ttl", default=60*60, type=int)
+    parser.add_argument("-s", "--subject")
+    parser.add_argument("-n", "--name")
+
+    parser.add_argument('token', nargs='?')
+    return parser
 
 def main():
-    subject = "http://orcid.org/0000-0003-0077-4738"
-    name = "Matthew B. Jones"
-    ttl = 18*60*60
-    claims = create_claims(subject, name, ttl)
-    key = read_key("privkey.pem")
-    algorithm = 'RS256'
-    token = create_token(algorithm, key, claims)
-    validate(token, key)
+    parser = init_argparse()
+    args = parser.parse_args()
+    if all(i is not None for i in [args.subject, args.name]):
+        # create a token
+        claims = create_claims(args.subject, args.name, args.ttl)
+        key = read_key("privkey.pem")
+        algorithm = 'RS256'
+        token = create_token(algorithm, key, claims)
+        print(token)
+    elif (args.token is not None):
+        # Validate token and show claims
+        key = read_key("privkey.pem")
+        validate(args.token, key)
+    else:
+        # Usage
+        parser.print_help(sys.stderr)
+        sys.exit(1)
 
 def read_key(keyfile):
     with open(keyfile, "rb") as pemfile:

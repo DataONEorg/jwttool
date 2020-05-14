@@ -11,13 +11,13 @@ k = key.export()
 print(k)
 
 algorithm = 'RS256'
-with open("dataone_org.key", "rb") as pemfile:
+with open("privkey.pem", "rb") as pemfile:
     key = jwk.JWK.from_pem(pemfile.read())
 k = key.export()
 print(k)
 
 consumerKey = "theconsumerkey"
-userId = "http:\\/\\/orcid.org\\/0000-0003-0077-4738"
+userId = "http://orcid.org/0000-0003-0077-4738"
 fullName = "Matthew B. Jones"
 
 ttl = 18*60*60
@@ -45,5 +45,4 @@ print(t)
 ST = jwt.JWT(key=key, jwt=t)
 print("CLAIMS")
 print(ST.claims)
-
 

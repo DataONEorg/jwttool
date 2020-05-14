@@ -38,10 +38,10 @@ def init_argparse() -> argparse.ArgumentParser:
         "-v", "--version", action="version",
         version = f"{parser.prog} version 1.0.0"
     )
-    parser.add_argument("-t", "--ttl", default=60*60, type=int)
-    parser.add_argument("-k", "--key", default="privkey.pem")
-    parser.add_argument("-s", "--subject")
-    parser.add_argument("-n", "--name")
+    parser.add_argument("-t", "--ttl", default=60*60, type=int, help="optional time-to-live in seconds")
+    parser.add_argument("-k", "--key", default="privkey.pem", help="optional filename or path to signing key")
+    parser.add_argument("-s", "--subject", help="subject identifier for the created token")
+    parser.add_argument("-n", "--name", help="name to be included in the created token")
 
     parser.add_argument('token', nargs='?')
     return parser

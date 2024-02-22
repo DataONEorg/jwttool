@@ -13,7 +13,7 @@ def main():
     if all(i is not None for i in [args.subject, args.name]):
         # create a token
         claims = create_claims(args.subject, args.name, args.ttl)
-        key = read_key(args.key)
+        key = read_key(args.key, args.passphrase)
         algorithm = 'RS256'
         token = create_token(algorithm, key, claims)
         print(token)
@@ -32,30 +32,35 @@ def init_argparse() -> argparse.ArgumentParser:
         description="Create or display JSON Web Tokens (JWT). " +
             "If subject and name are provided, create a token. " + 
             "If a token is provided, validate it and print the claims. " +
-            "Optionally provide a TTL value in seconds or signing key."
+            "Optionally provide a TTL value in seconds, a signing key, " +
+            "and/or an optional key passphrase"
     )
     parser.add_argument(
         "-v", "--version", action="version",
-        version = f"{parser.prog} version 1.0.0"
+        version = f"{parser.prog} version 1.1.0"
     )
     parser.add_argument("-t", "--ttl", default=60*60, type=int, help="optional time-to-live in seconds")
     parser.add_argument("-k", "--key", default="privkey.pem", help="optional filename or path to signing key")
+    parser.add_argument("-p", "--passphrase", help="optional passphrase for key")
     parser.add_argument("-s", "--subject", help="subject identifier for the created token")
     parser.add_argument("-n", "--name", help="name to be included in the created token")
 
     parser.add_argument('token', nargs='?')
     return parser
 
-def read_key(keyfile):
-    """ 
-    Read the signing key from a file. 
 
-    Parameters: 
-        keyfile (string): The filename or path of the private key file. 
+def read_key(keyfile, passphrase=None):
+    """
+    Read the signing key from a file, optionally using a passphrase if needed.
+
+    Parameters:
+        keyfile (string): The filename or path of the private key file.
+        passphrase (string): optional passphrase for the private key file.
     """
     with open(keyfile, "rb") as pemfile:
-        key = jwk.JWK.from_pem(pemfile.read())
-    return(key)
+        key = jwk.JWK.from_pem(pemfile.read(), passphrase.encode() if passphrase else None)
+    return key
+
 
 def create_claims(subject, full_name, ttl=60*60):
     """ 

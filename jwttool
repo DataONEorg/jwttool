@@ -27,13 +27,12 @@ def main():
         sys.exit(1)
 
 def init_argparse() -> argparse.ArgumentParser:
-    """Initialze the argument parser for commandline arguments."""
+    """Initialize the argument parser for commandline arguments."""
     parser = argparse.ArgumentParser(
         description="Create or display JSON Web Tokens (JWT). " +
             "If subject and name are provided, create a token. " + 
             "If a token is provided, validate it and print the claims. " +
-            "Optionally provide a TTL value in seconds, a signing key, " +
-            "and/or an optional key passphrase"
+            "Optionally provide a TTL value in seconds, a signing key, and/or a key passphrase"
     )
     parser.add_argument(
         "-v", "--version", action="version",

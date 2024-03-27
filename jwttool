@@ -19,7 +19,7 @@ def main():
         print(token)
     elif (args.token is not None):
         # Validate token and show claims
-        key = read_key(args.key)
+        key = read_key(args.key, args.passphrase)
         validate(args.token, key)
     else:
         # Usage
